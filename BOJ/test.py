@@ -1,4 +1,6 @@
-print(list(range(-1, -5, -1)))
 
-a= [1, 2, 3, 4]
-print(a[-3])
+a= [1, 4, 3, 2, 5, 6]
+
+num = [i for i in range(len(a[:3])) if a[i] == 1]
+a.insert(2, a.pop())
+print(a)
