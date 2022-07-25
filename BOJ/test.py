@@ -1,6 +1,6 @@
+from re import M
 
-a= [1, 4, 3, 2, 5, 6]
 
-num = [i for i in range(len(a[:3])) if a[i] == 1]
-a.insert(2, a.pop())
-print(a)
+a= [1,2,3,4,5,6 ,7 ,8, 9]
+a_list =a[1:3] + [a[4]]
+print(a_list)

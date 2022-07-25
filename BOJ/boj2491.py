@@ -2,29 +2,39 @@
 
 N = int(input())
 num_lst = list(map(int, input().split()))
-print(num_lst)
-max_count = 0
-count = 2
+max_count = 1
+d_count = u_count = 1
+is_up = is_down = True
 
-for i in range(0, N - 1):
-    if i == 0:
-        continue
-    if num_lst[i] >= num_lst[i - 1]:
-        if num_lst[i + 1] >= num_lst[i]:
-            count += 1
-            if max_count < count:
-                max_count = count
-                print('1', count)
+for i in range(1, N):
+    if num_lst[i] > num_lst[i - 1]: # 현재 숫자가 전보다 큰 경우
+        is_down = False
+        d_count = 1
+        if is_up == True:
+            u_count += 1
+            if max_count < u_count:
+                max_count = u_count
         else:
-            count = 2
+            is_up = True
+            u_count = 2
+    elif num_lst[i] < num_lst[i - 1]: # 현재 숫자가 전보다 작은 경우
+        is_up = False
+        u_count = 1
+        if is_down == True:
+            d_count += 1
+            if max_count < d_count:
+                max_count = d_count
+        else:
+            is_down = True
+            d_count = 2
+    elif num_lst[i] == num_lst[i - 1]:# 값 똑같을 경우
+        is_up = is_down = True
+        u_count += 1
+        d_count += 1
+        if max_count < u_count:
+            max_count = u_count
+        if max_count < d_count:
+            max_count = d_count
 
-    if num_lst[i] <= num_lst[i - 1]:
-        if num_lst[i + 1] <= num_lst[i]:
-            count += 1
-            print('2', count)
-            if max_count < count:
-                max_count = count
-        else:
-            count = 2
 print(max_count)
 
