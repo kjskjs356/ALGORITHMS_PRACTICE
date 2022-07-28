@@ -1,7 +1,7 @@
 # 2527 직사각형
 
 rect = []
-for _ in range(1):
+for _ in range(4):
     rect_len = (list(map(int, input().split())))
     rect.append(rect_len)
 
@@ -15,7 +15,7 @@ for i in range(len(rect)):
         print('a')
 
     #'b' 케이스 => 가로 2 이상 세로 1 혹은 가로1 세로 2이상, 한 선분만 겹침
-    elif len(x1 & x2) >= 2 and len(y1 & y2) == 1 or len(x1 & x2) == 1 and len(y1 & y2) >= 2:
+    elif (len(x1 & x2) >= 2 and len(y1 & y2) == 1) or (len(x1 & x2) == 1 and len(y1 & y2) >= 2):
         print('b')
     
     #'c' 케이스 => 가로, 세로 둘다 1, 한 점만 겹침
