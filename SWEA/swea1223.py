@@ -5,6 +5,7 @@ exp = input()
 result = []
 tmp = []
 Sum = 0
+abc = 0
 
 for n in range(10):
     for i in range(len(exp)):
