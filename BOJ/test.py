@@ -6,5 +6,5 @@
 # print(func_a(1,3,6,1,3,7,a=3,b=4))
 
 # print(True + False)
-a= 'python'
-print(a[3:8])
+a= [1,2,3,4,5]
+print(a[-1])
