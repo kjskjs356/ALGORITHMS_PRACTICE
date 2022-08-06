@@ -1,37 +1,24 @@
-def solution(servers, sticky, requests):
-    answer = [[] for _ in range(servers)]
-    cnt = 0
-    num = 0
-    while cnt != len(requests):
-        if not sticky:
-            answer[num].append(requests[cnt])
-            num += 1
-            cnt += 1
-            if num == len(answer):
-                num = 0
+def solution(tasks):
+    answer = 0
+    check = []
+    if len(tasks) == 1:
+        return -1
+    for i in range(len(tasks) - 1):
+        if tasks[i] in check:
+            continue
         else:
-            if cnt == 0:
-                answer[num].append(requests[cnt])
+            check.append(tasks[i])
+        cnt = 1
+        for j in range(i + 1, len(tasks)):
+            if tasks[i] == tasks[j]:
                 cnt += 1
-                continue
-
-            if requests[cnt] == requests[cnt - 1]:
-                answer[num].append(requests[cnt])
-                cnt += 1
-
-            else:
-                if num == len(answer) - 1:
-                    num = 0
-                else:
-                    num += 1
-                answer[num].append(requests[cnt])
-                cnt += 1
-    while [] in answer:
-        answer.remove([])
+        if cnt % 3 == 0:
+            answer += 1
+        elif cnt % 2 == 0:
+            answer += 1
+        else:
+            return -1
+            
     return answer
 
-servers = 4
-sticky = True
-requests = [1]
-
-print(solution(servers, sticky, requests))
+print(solution([1,1,2,2,2,3,3,3,3,4,4,4,4,4,4,5,5,5]))
