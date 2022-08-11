@@ -1,9 +1,6 @@
 # 1764 듣보잡 풀이
 #2022-08-09
 
-from typing import no_type_check_decorator
-
-
 N, M = map(int, input().split())
 No_hear, No_see, Sum_arr = [], [], []
 cnt = 0
