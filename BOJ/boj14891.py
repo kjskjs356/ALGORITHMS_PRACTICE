@@ -10,7 +10,12 @@ def cogwheel_rotate(arr, d):
         arr.append(arr.popleft())
 
 def check_wheel(idx, cogwheel, d):
-    print(idx)
+    if not (0 <= idx <= 3):
+        return
+    if check[idx]:
+        return
+    else:
+        check[idx] = True
     # 제일 왼쪽 톱니바퀴
     if idx == 0:
         if cogwheel[idx][2] != cogwheel[idx + 1][6]:
@@ -43,13 +48,13 @@ rotation = []
 for _ in range(K):
     rotation.append(list(map(int, input().split())))
 result = 0
+# 톱니 실행 여부
+check = [False] * 4
 # K만큼 톱니 회전
 for i in range(0, K):
     choice, direct = rotation[i][0] - 1, rotation[i][1]
     check_wheel(choice, cogwheel, direct)
-    for i in range(4):
-        print(cogwheel[i])
-    print()
+    check = [False] * 4
 #점수 체크
 for i in range(4):
     result += cogwheel[i][0] * 2**i
