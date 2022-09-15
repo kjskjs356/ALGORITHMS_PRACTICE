@@ -37,12 +37,7 @@ def aliance(x, y):
                 if (L <= abs(field[a][b] - field[a + dx[i]][b + dy[i]]) <= R) and check[a + dx[i]][b + dy[i]] == 0:
                     check[a + dx[i]][b + dy[i]] = 1
                     q.append([a + dx[i], b + dy[i]])
-    # check[x][y] = 1
-    # for i in range(4):
-    #     if 0 <= x + dx[i] <= N - 1 and 0 <= y + dy[i] <= N - 1:
-    #         # 조건 충족하면 국경 오픈
-    #         if (L <= abs(field[x][y] - field[x + dx[i]][y + dy[i]]) <= R) and check[x + dx[i]][y + dy[i]] == 0:
-    #             aliance(x + dx[i], y + dy[i])
+
 
 # 인구 이동 끝날때까지 반복
 q = deque()
