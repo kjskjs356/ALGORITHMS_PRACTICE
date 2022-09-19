@@ -1,67 +1,85 @@
 # 14502 연구소 풀이
 
-def dfs(x, y):
-    global N, M
-    # 범위 벗어나면 리턴
-    if not (0 <= x <= N - 1 and 0 <= y <= M - 1):
-        return
-    else:
-        # 빈 공간인 경우 바이러스 침투
-        if field[x][y] == 0:
-            field[x][y] = 2
-            dfs(x, y + 1)
-            dfs(x + 1, y)
-            dfs(x, y - 1)
-            dfs(x - 1, y)
-        else:
-            return
+from collections import deque
 
-# 벽 생성 함수
-def create_wall(x, y):
-    global wall, install_wall
-    for i in range(x, N):
-        for j in range(y, M):
-            # wall 3 될때까지 빈공간에 벽 생성
-            if field[i][j] == 0 and wall < 3:
-                wall += 1
-                field[i][j] = 1
-                install_wall.append([i, j])
-    print(install_wall)
 
-# 설치했던 벽 초기화 함수
-def init_field():
-    global wall
-    global install_wall
-    for x, y in install_wall:
-        field[x][y] = 0
-    install_wall = []
-    wall = 0
+def comb(arr, n):
+    result = []
+    if n > len(arr):
+        return result
+    elif n == 1:
+        for x in arr:
+            result.append([x])
+    elif n > 1:
+        for i in range(len(arr) - n + 1):
+            for j in comb(arr[i + 1:], n - 1):
+                result.append([arr[i]] + j)
+    return result
+
+
+def bfs(a, b):
+    q = deque()
+    q.append((a, b))
+    visited[a][b] = True
+    while q:
+        x, y = q.popleft()
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            if 0 <= nx <= N - 1 and 0 <= ny <= M - 1:
+                if field[nx][ny] != 1 and not visited[nx][ny]:
+                    visited[nx][ny] = True
+                    field[nx][ny] = 2
+                    q.append((nx, ny))
+
+
+# 우 하 좌 상
+dx = [0, 1, 0, -1]
+dy = [1, 0, -1, 0]
 
 N, M = map(int, input().split())
-field = [list(map(int, input().split())) for _ in range(N)]
-result = 0
-wall = 0
-install_wall = []
-visited = [[False] * N for _ in range(M)]
-# 0: 빈칸, 1: 벽, 2: 바이러스
+# 바이러스 위치 저장
+virus = []
+# 벽을 세울 수 있는 위치 저장
+walls = []
+field = []
+max_safe = 0
+
 for i in range(N):
+    tmp = list(map(int, input().split()))
+    field.append(tmp)
     for j in range(M):
-        create_wall(i, j)
-        cnt = 0
-        for k in range(N):
-            print(field[k])
-        print()
-        # 연구소를 순회하면서 바이러스 위치 탐색
-        for k in range(N):
-            for l in range(M):
-                if field[k][l] == 2:
-                    dfs(k, l)
-        # 안전 영역 넓이 계산
-        for k in range(N):
-            for l in range(M):
-                if field[k][l] == 0:
-                    cnt += 1
-        if result < cnt:
-            result = cnt
-        init_field()
-print(result)
+        if field[i][j] == 2:
+            virus.append((i, j))
+        elif field[i][j] == 0:
+            walls.append((i, j))
+
+# 조합을 활용하여 벽생성
+for wall in comb(walls, 3):
+    safe = 0
+    visited = [[False] * M for _ in range(N)]
+    for x, y in wall:
+        field[x][y] = 1
+
+    # 바이러스 심기
+    for x, y in virus:
+        field[x][y] = 2
+
+    # bfs 탐색 후 안전영역 최대 크기 비교
+    for x, y in virus:
+        bfs(x, y)
+    for i in range(N):
+        for j in range(M):
+            if field[i][j] == 0:
+                safe += 1
+        if max_safe < safe:
+            max_safe = safe
+
+    # 세웠던 벽, 바이러스 초기화
+    for x, y in wall:
+        field[x][y] = 0
+    for i in range(N):
+        for j in range(M):
+            if field[i][j] == 2:
+                field[i][j] = 0
+print(max_safe)
