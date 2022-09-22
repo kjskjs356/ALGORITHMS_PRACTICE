@@ -8,26 +8,32 @@ dx = [-1, -1, 0, 1, 1, 1, 0, -1]
 dy = [0, 1, 1, 1, 0, -1, -1, -1]
 
 N, M, K = map(int, input().split())
-field = [[0] * N for _ in range(N)]
+field = [[[]for _ in range(N)] for _ in range(N)]
 # 파이어볼 => 0:행, 1:열, 2:질량, 3:속도, 4:방향
 fire = deque()
 for _ in range(M):
     r, c, m, s, d = map(int, input().split())
     r -= 1
     c -= 1
-    fire.append([r, c, m, s, d])
+    field[r][c].append([m, s, d])
 result = 0
-
 for _ in range(K):
     # 파이어볼 이동
-    for i in range(len(fire)):
-        if field[fire[i][0]][fire[i][1]] > 0:
-            field[fire[i][0]][fire[i][1]] -= 1
-        fire[i][0] += dx[fire[i][4]] * fire[i][3] % N
-        fire[i][1] += dy[fire[i][4]] * fire[i][3] % N
-        fire[i][0] %= N
-        fire[i][1] %= N
-        field[fire[i][0] % N][fire[i][1] % N] += 1
+    new_field = [[[] for _ in range(N)] for _ in range(N)]
+    for i in range(N):
+        for j in range(N):
+            while field[i][j]:
+                ni, nj = i, j
+                m, s, d = field[i][j].pop(0)
+                ni = (ni + dx[d] * s) % N
+                nj = (nj + dy[d] * s) % N
+                new_field[ni][nj].append((m, s, d))
+    for i in range(N):
+        for j in range(N):
+            field[i][j].append(new_field[i][j])
+    for i in range(N):
+        print(field[i])
+
 
     # 겹친 파이어볼 조사(겹치는게 없을 때까지)
     for i in range(N):
