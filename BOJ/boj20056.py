@@ -59,11 +59,17 @@ while K > 0:
                 sum_mass, sum_speed = 0, 0
                 sum_direct = []
                 # 겹친 파이어볼의 질량, 속도, 방향 체크
+                cnt = 0
                 for k in range(len(fire)):
                     if fire[k][0] == i and fire[k][1] == j:
                         sum_mass += fire[k][2]
                         sum_speed += fire[k][3]
                         sum_direct.append(fire[k][4])
+                        del fire[k]
+                        fire.append([999999, 999999])
+                        cnt += 1
+                for _ in range(cnt):
+                    fire.pop()
                 new_mass = sum_mass // 5
                 new_speed = sum_speed // field[i][j]
                 # 질량이 0이면 소멸
