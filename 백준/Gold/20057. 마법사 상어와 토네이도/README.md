@@ -1,4 +1,4 @@
-# [Gold IV] 마법사 상어와 토네이도 - 20057 
+# [Gold III] 마법사 상어와 토네이도 - 20057 
 
 [문제 링크](https://www.acmicpc.net/problem/20057) 
 
