@@ -12,7 +12,6 @@ def diffusion(micro):
                     continue
                 area[nx][ny] += micro.get(arr) // 5
                 area[x][y] -= micro.get(arr) // 5
-                # print(nx, ny, area[nx][ny], x, y, area[x][y])
             if area[x][y] < 0:
                 area[x][y] = 0
 
@@ -75,9 +74,6 @@ def clear():
 dx = [0, 1, 0, -1]
 dy = [1, 0, -1, 0]
 
-# 필터 델타탐색 - 첫번쨰 : 우 상 좌 하 / 두번쨰 : 우 하 좌 상
-ddx = [[0, -1, 0, 1], [0, 1, 0, -1]]
-ddy = [[1, 0, -1, 0], [1, 0, -1, 0]]
 # R, C : R x C 면적, T: 시간
 R, C, T = map(int, input().split())
 area = []
