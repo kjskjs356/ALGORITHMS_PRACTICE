@@ -8,32 +8,27 @@ def bfs(arr):
     for i in range(len(arr)):
         q[i] = deque()
         q[i].append((arr[i][0], arr[i][1], 0))
-        new_area[arr[i][0]][arr[i][1]] = 2
     while True:
-        is_zero = True
-        for i in range(N):
-            print(new_area[i])
-        print()
         q_check = False
         for i in range(len(arr)):
-            for j in range(N):
-                for k in range(N):
-                    if area[j][k] == 0:
-                        is_zero = False
             if not q[i]:
                 continue
             num = len(q[i])
             for _ in range(num):
                 x, y, cnt = q[i].popleft()
+                visited[x][y] = True
                 for j in range(4):
                     nx = x + dx[j]
                     ny = y + dy[j]
                     if 0 <= nx < N and 0 <= ny < N:
-                        if new_area[nx][ny] == 0 or new_area[nx][ny] == -2:
+                        if new_area[nx][ny] == 0:
                             new_area[nx][ny] = cnt + 1
                             q[i].append((nx, ny, cnt + 1))
-        if is_zero:
-            break
+                        elif new_area[nx][ny] == 2 and not visited[nx][ny]:
+                            visited[nx][ny] = True
+                            new_area[nx][ny] = -1
+                            q[i].append((nx, ny, cnt + 1))
+
         # q가 하나라도 요소가 남아있다면 계속 반복
         for i in range(len(arr)):
             if q[i]:
@@ -41,6 +36,7 @@ def bfs(arr):
         # q가 모두 비었으면 중단
         if not q_check:
             break
+
 
 def comb(arr, n):
     result = []
@@ -55,9 +51,9 @@ def comb(arr, n):
                 result.append([arr[i]] + j)
     return result
 
+
 dx = [0, 1, 0, -1]
 dy = [1, 0, -1, 0]
-
 
 N, M = map(int, input().split())
 area = []
@@ -83,12 +79,9 @@ else:
         check = False
         breaker = False
         new_area = [arr[:] for arr in area]
-        for i in range(N):
-            for j in range(N):
-                if new_area[i][j] == 2:
-                    new_area[i][j] = -2
-                if new_area[i][j] == 1:
-                    new_area[i][j] = -1
+        visited = [[False] * N for _ in range(N)]
+        for x, y in v:
+            new_area[x][y] = -1
         bfs(v)
         # 모든 빈칸에 바이러스를 퍼뜨린 경우에만 최소값갱신
         for i in range(N):
