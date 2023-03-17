@@ -1,7 +1,5 @@
 # 2024 선분덮기
 
-from collections import deque
-
 # 0부터 M 까지의 범위를 선으로 덮기
 M = int(input())
 line = []
@@ -24,8 +22,7 @@ while True:
         if line[idx][0] <= cur:
             if line[idx][1] > end:
                 end = line[idx][1]
-            else:
-                idx += 1
+            idx += 1
         else:
             break
     if end == -1:
