@@ -1,157 +1,262 @@
 # 15683 감시
 
 
-# 중복순열
-def product(arr, n):
-    for i in range(len(arr)):
-        if n == 1:
-            yield [arr[i]]
-        else:
-            for j in product(arr, n - 1):
-                yield [arr[i]] + j
-
-
 N, M = map(int, input().split())
-area = []
-cctv = []
-ans = float('inf')
-for i in range(N):
-    arr = list(map(int, input().split()))
-    for j in range(M):
-        if 0 < arr[j] < 6:
-            cctv.append((i, j, arr[j]))
-    area.append(arr)
-dx = [1, 0, -1, 0]
-dy = [0, 1, 0, -1]
+data = [list(map(int, input().split())) for _ in range(N)]
+min_num = float("inf")
 
-if len(cctv) == 0:
-    temp = 0
-    for i in range(N):
-        for j in range(M):
-            if area[i][j] == 0:
-                temp += 1
-    print(temp)
-else:
-    # 방향을 남 북 동 서 0, 1, 2, 3으로 설정
-    for arr in product([0, 1, 2, 3], len(cctv)):
-        area2 = [arr[:] for arr in area]
-        # cctv 순서대로 감시지역 체크
-        for i in range(len(cctv)):
-            x, y, type = cctv[i][0], cctv[i][1], cctv[i][2]
-            if type == 1:
-                num = 1
-                while True:
-                    nx = x + dx[arr[i]] * num
-                    ny = y + dy[arr[i]] * num
-                    # 범위 안쪽 & 벽 없는지 체크
-                    if 0 <= nx < N and 0 <= ny < M and area2[nx][ny] != 6:
-                        # cctv 있는 자리면 다음칸으로 이동
-                        if area2[nx][ny] > 0:
-                            num += 1
-                        else:
-                            # 감시한 자리는 9로 표시
-                            area2[nx][ny] = 9
-                            num += 1
-                    else:
-                        break
-            elif type == 2:
-                num, num2 = 1, 1
-                flag1, flag2 = True,  True
-                while flag1 or flag2:
-                    if flag1:
-                        nx = x + dx[arr[i]] * num
-                        ny = y + dy[arr[i]] * num
-                        if 0 <= nx < N and 0 <= ny < M and area2[nx][ny] != 6:
-                            # cctv 있는 자리면 다음칸으로 이동
-                            if area2[nx][ny] > 0:
-                                num += 1
-                            else:
-                                # 감시한 자리는 9로 표시
-                                area2[nx][ny] = 9
-                                num += 1
-                        else:
-                            flag1 = False
-                    if flag2:
-                        nx2 = x + dx[(arr[i] + 2) % 4] * num2
-                        ny2 = y + dy[(arr[i] + 2) % 4] * num2
-                        #한쪽부터 체크
-                        if 0 <= nx2 < N and 0 <= ny2 < M and area2[nx2][ny2] != 6:
-                            # cctv 있는 자리면 다음칸으로 이동
-                            if area2[nx2][ny2] > 0:
-                                num2 += 1
-                            else:
-                                # 감시한 자리는 9로 표시
-                                area2[nx2][ny2] = 9
-                                num2 += 1
-                        else:
-                            flag2 = False
-            elif type == 3:
-                # 현방향 + 90도 회전방향 검사
-                for j in range(2):
-                    num = 1
-                    while True:
-                        nx = x + dx[(arr[i] + j) % 4] * num
-                        ny = y + dy[(arr[i] + j) % 4] * num
-                        if 0 <= nx < N and 0 <= ny < M and area2[nx][ny] != 6:
-                            # cctv 있는 자리면 다음칸으로 이동
-                            if area2[nx][ny] > 0:
-                                num += 1
-                            else:
-                                # 감시한 자리는 9로 표시
-                                area2[nx][ny] = 9
-                                num += 1
-                        else:
-                            break
-            elif type == 4:
-                # 한 방향만 빼고 모두 검사
-                for j in range(3):
-                    num = 1
-                    while True:
-                        nx = x + dx[(arr[i] + j) % 4] * num
-                        ny = y + dy[(arr[i] + j) % 4] * num
-                        if 0 <= nx < N and 0 <= ny < M and area2[nx][ny] != 6:
-                            # cctv 있는 자리면 다음칸으로 이동
-                            if area2[nx][ny] > 0:
-                                num += 1
-                            else:
-                                # 감시한 자리는 9로 표시
-                                area2[nx][ny] = 9
-                                num += 1
-                        else:
-                            break
-            elif type == 5:
-                # 4방향을 감시하므로 방향 경우의수를 1가지만 체크해도 상관없다
-                if arr[i] == 0:
-                    # 모든 방향 검사
-                    for j in range(4):
-                        num = 1
-                        while True:
-                            nx = x + dx[(arr[i] + j) % 4] * num
-                            ny = y + dy[(arr[i] + j) % 4] * num
-                            if 0 <= nx < N and 0 <= ny < M and area2[nx][ny] != 6:
-                                # cctv 있는 자리면 다음칸으로 이동
-                                if area2[nx][ny] > 0:
-                                    num += 1
-                                else:
-                                    # 감시한 자리는 9로 표시
-                                    area2[nx][ny] = 9
-                                    num += 1
-                            else:
-                                break
 
-        # 사각지대 체크
-        temp = 0
-        breaker = False
-        for i in range(N):
-            if breaker:
+def one_cctv(r, c, visited, flag):  # 1번 씨씨티비 감시
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, -1, 1]
+    while True:
+        nx = r + dx[flag]
+        ny = c + dy[flag]
+        if 0 <= nx < N and 0 <= ny < M:
+            if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
                 break
+            if visited[nx][ny] <= 0:
+                visited[nx][ny] -= 1
+            r, c = nx, ny
+        else:
+            break
+
+
+def one_cctv_clear(r, c, visited, flag):  # 1번 씨시티비가 감시했던 장소들을 다시 원래대로
+    dx = [-1, 1, 0, 0]
+    dy = [0, 0, -1, 1]
+    while True:
+        nx = r + dx[flag]
+        ny = c + dy[flag]
+        if 0 <= nx < N and 0 <= ny < M:
+            if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                break
+            if visited[nx][ny] < 0:
+                visited[nx][ny] += 1
+            r, c = nx, ny
+        else:
+            break
+
+
+def two_cctv(r, c, visited, flag):
+    dx = [(0, 0), (-1, 1)]
+    dy = [(-1, 1), (0, 0)]
+    tr, tc = r, c
+    for i in range(2):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:  # 계쏙 범위 안에 있나
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] <= 0:
+                    visited[nx][ny] -= 1
+                r, c = nx, ny
+            else:
+                break  # 계속 더하기 때문에 범위 안에 계속 있을 수가 없어
+
+
+def two_cctv_clear(r, c, visited, flag):  # 2번 씨시티비가 감시했던 장소들을 다시 원래대로
+    dx = [(0, 0), (-1, 1)]
+    dy = [(-1, 1), (0, 0)]
+    tr, tc = r, c
+    for i in range(2):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] < 0:
+                    visited[nx][ny] += 1
+                r, c = nx, ny
+            else:
+                break
+
+
+def three_cctv(r, c, visited, flag):
+    dx = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    dy = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    tr, tc = r, c
+    for i in range(2):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] <= 0:
+                    visited[nx][ny] -= 1
+                r, c = nx, ny
+            else:
+                break
+
+
+def three_cctv_clear(r, c, visited, flag):  # 3번 씨시티비가 감시했던 장소들을 다시 원래대로
+    dx = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+    dy = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    tr, tc = r, c
+    for i in range(2):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] < 0:
+                    visited[nx][ny] += 1
+                r, c = nx, ny
+            else:
+                break
+
+
+def four_cctv(r, c, visited, flag):  # 4번 씨씨티비 감시
+    dx = [(0, -1, 0), (-1, 0, 1), (0, 1, 0), (1, 0, -1)]
+    dy = [(-1, 0, 1), (0, 1, 0), (1, 0, -1), (0, -1, 0)]
+    tr, tc = r, c
+    for i in range(3):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] <= 0:
+                    visited[nx][ny] -= 1
+                r, c = nx, ny
+            else:
+                break
+
+
+def four_cctv_clear(r, c, visited, flag):  # 4 번 씨시티비가 감시했던 장소들을 다시 원래대로
+    dx = [(0, -1, 0), (-1, 0, 1), (0, 1, 0), (1, 0, -1)]
+    dy = [(-1, 0, 1), (0, 1, 0), (1, 0, -1), (0, -1, 0)]
+    tr, tc = r, c
+    for i in range(3):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] < 0:
+                    visited[nx][ny] += 1
+                r, c = nx, ny
+            else:
+                break
+
+
+def five_cctv(r, c, visited, flag):  # 5번 씨씨티비 감시
+    dx = [(0, -1, 0, 1)]
+    dy = [(-1, 0, 1, 0)]
+    tr, tc = r, c
+    for i in range(4):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] <= 0:
+                    visited[nx][ny] -= 1
+                r, c = nx, ny
+            else:
+                break
+
+
+def five_cctv_clear(r, c, visited, flag):  # 5번 씨시티비가 감시했던 장소들을 다시 원래대로
+    dx = [(0, -1, 0, 1)]
+    dy = [(-1, 0, 1, 0)]
+    tr, tc = r, c
+    for i in range(4):
+        r, c = tr, tc
+        while True:
+            nx = r + dx[flag][i]
+            ny = c + dy[flag][i]
+            if 0 <= nx < N and 0 <= ny < M:
+                if visited[nx][ny] == 6:  # 벽이라면 바로 탈출
+                    break
+                if visited[nx][ny] < 0:
+                    visited[nx][ny] += 1
+                r, c = nx, ny
+            else:
+                break
+
+
+def solve(r, c, data):
+    global min_num
+    if c == M:  # 맨 오른쪽 까지 왔다면 한 줄 밑으로
+        c = 0
+        r += 1
+    if r == N:  # 행이 범위를 벗어났다면 사각지대 최소 갯수 구하고 리턴
+        count = 0
+        for i in range(N):
             for j in range(M):
-                if area2[i][j] == 0:
-                    temp += 1
-                    if temp >= ans:
-                        breaker = True
-                        break
-        if breaker:
-            continue
-        ans = min(ans, temp)
-    print(ans)
+                if data[i][j] == 0:
+                    count += 1
+        min_num = min(min_num, count)
+        return
+    if 1 <= data[r][c] <= 5:  # 씨씨티비가 있는 장소라면 해당 번호에 맞게 함수 호출
+        if data[r][c] == 1:
+            one_cctv(r, c, data, 0)  # 씨시티비로 감시하고
+            solve(r, c + 1, data)  # 다음 열로 재귀함수 부르고
+            one_cctv_clear(r, c, data, 0)  # 다시 돌아왔을 때는 원래대로 되돌리기
+            one_cctv(r, c, data, 1)  # 다음 방향으로 다시 감시
+            solve(r, c + 1, data)
+            one_cctv_clear(r, c, data, 1)
+            one_cctv(r, c, data, 2)
+            solve(r, c + 1, data)
+            one_cctv_clear(r, c, data, 2)
+            one_cctv(r, c, data, 3)
+            solve(r, c + 1, data)
+            one_cctv_clear(r, c, data, 3)
+        if data[r][c] == 2:
+            two_cctv(r, c, data, 0)
+            solve(r, c + 1, data)
+            two_cctv_clear(r, c, data, 0)
+            two_cctv(r, c, data, 1)
+            solve(r, c + 1, data)
+            two_cctv_clear(r, c, data, 1)
+        if data[r][c] == 3:
+            three_cctv(r, c, data, 0)
+            solve(r, c + 1, data)
+            three_cctv_clear(r, c, data, 0)
+            three_cctv(r, c, data, 1)
+            solve(r, c + 1, data)
+            three_cctv_clear(r, c, data, 1)
+            three_cctv(r, c, data, 2)
+            solve(r, c + 1, data)
+            three_cctv_clear(r, c, data, 2)
+            three_cctv(r, c, data, 3)
+            solve(r, c + 1, data)
+            three_cctv_clear(r, c, data, 3)
+        if data[r][c] == 4:
+            four_cctv(r, c, data, 0)
+            solve(r, c + 1, data)
+            four_cctv_clear(r, c, data, 0)
+            four_cctv(r, c, data, 1)
+            solve(r, c + 1, data)
+            four_cctv_clear(r, c, data, 1)
+            four_cctv(r, c, data, 2)
+            solve(r, c + 1, data)
+            four_cctv_clear(r, c, data, 2)
+            four_cctv(r, c, data, 3)
+            solve(r, c + 1, data)
+            four_cctv_clear(r, c, data, 3)
+        if data[r][c] == 5:
+            five_cctv(r, c, data, 0)
+            solve(r, c + 1, data)
+            five_cctv_clear(r, c, data, 0)
+    else:  # 씨씨티비가 없던 좌표였다면 다음 좌표로 이동
+        solve(r, c + 1, data)
+
+
+solve(0, 0, data)
+print(min_num)
